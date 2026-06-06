@@ -1,11 +1,11 @@
-<Window x:Class="SimpleFolderCompare.MainWindow"
+﻿<Window x:Class="SimpleFolderCompare.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Simple Folder Compare"
-        Width="1120"
-        Height="720"
-        MinWidth="900"
-        MinHeight="620"
+         Width="1120"
+        Height="760"
+        MinWidth="1020"
+        MinHeight="640"
         Background="#F8FAFC">
     <Window.Resources>
         <Style TargetType="Button">
@@ -15,6 +15,7 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontFamily" Value="Segoe UI" />
         </Style>
         <Style TargetType="TextBox">
             <Setter Property="BorderBrush" Value="#CBD5E1" />
@@ -26,7 +27,29 @@
             <Setter Property="Foreground" Value="#334155" />
             <Setter Property="FontSize" Value="14" />
         </Style>
+        <Style x:Key="SubtleText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#475569" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        <Style x:Key="CardButton" TargetType="Button">
+            <Setter Property="Margin" Value="0,0,10,10" />
+            <Setter Property="Padding" Value="14,9" />
+            <Setter Property="Background" Value="#0891B2" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="MinWidth" Value="152" />
+        </Style>
+        <Style x:Key="PanelCard" TargetType="Border">
+            <Setter Property="Background" Value="White" />
+            <Setter Property="BorderBrush" Value="#E2E8F0" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
     </Window.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -37,7 +60,7 @@
         <Border Grid.Row="0" Background="#0891B2" Padding="28,24">
             <StackPanel>
                 <TextBlock Text="Simple Folder Compare" Foreground="White" FontSize="30" FontWeight="Bold" />
-                <TextBlock Text="Compare two folders and spot changed files." Foreground="#E0F2FE" FontSize="16" Margin="0,6,0,0" />
+                <TextBlock Text="Compare two folders and spot missing, changed, and matching files." Foreground="#E0F2FE" FontSize="16" Margin="0,6,0,0" />
             </StackPanel>
         </Border>
 
@@ -47,43 +70,112 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" Padding="22">
+            <Border Grid.Column="0" Style="{StaticResource PanelCard}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="Workflow" FontSize="21" FontWeight="SemiBold" Foreground="#0F172A" />
-                    <TextBlock Grid.Row="1" Text="Select left and right folders, compare contents, and review missing, changed, and matching files." TextWrapping="Wrap" Foreground="#475569" FontSize="14" Margin="0,8,0,18" />
+                    <TextBlock Text="Comparison workspace" FontSize="21" FontWeight="SemiBold" Foreground="#0F172A" />
+                    <TextBlock Grid.Row="1" Text="Choose folders, configure compare strategy, and inspect differences in one place." TextWrapping="Wrap" Foreground="#475569" FontSize="14" Margin="0,8,0,18" />
 
-                    <Grid Grid.Row="2">
+                    <Grid Grid.Row="2" Margin="0,0,0,8">
                         <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
-                        <WrapPanel>
-                    <Button Content="Choose Left Folder" Click="OnActionButtonClick" />
-                    <Button Content="Choose Right Folder" Click="OnActionButtonClick" />
-                    <Button Content="Compare Folders" Click="OnActionButtonClick" />
-                        </WrapPanel>
-                        <ListBox x:Name="ActivityList" Grid.Row="1" BorderBrush="#E2E8F0" BorderThickness="1" Margin="0,8,0,0" />
+
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,12">
+                            <Button Style="{StaticResource CardButton}" x:Name="LeftFolderButton" Content="Choose Left Folder" Click="PickLeftFolder" />
+                            <Button Style="{StaticResource CardButton}" x:Name="RightFolderButton" Content="Choose Right Folder" Click="PickRightFolder" />
+                            <Button Style="{StaticResource CardButton}" x:Name="CompareButton" Content="Compare Folders" Click="CompareFolders" />
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" x:Name="LeftPathText" Text="Left: not selected" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" />
+                            <TextBlock Grid.Column="1" x:Name="RightPathText" Text="Right: not selected" TextTrimming="CharacterEllipsis" FontWeight="SemiBold" HorizontalAlignment="Right" />
+                        </Grid>
+
+                        <Border Grid.Row="2" Padding="12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Margin="0,0,0,12">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <CheckBox x:Name="RecurseCheck" Content="Recurse subfolders" IsChecked="True" Margin="0,0,16,0" />
+                                <CheckBox x:Name="SizeCheck" Content="Compare size" IsChecked="True" Margin="0,0,16,0" />
+                                <CheckBox x:Name="HashCheck" Content="Compare SHA256" IsChecked="False" Margin="0,0,16,0" />
+                                <CheckBox x:Name="EqualOnlyCheck" Content="Show equal only" IsChecked="False" />
+                            </StackPanel>
+                        </Border>
+
+                        <Grid Grid.Row="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox x:Name="SearchBox" Grid.Column="0" Height="32" VerticalContentAlignment="Center" Margin="0,0,12,0" TextChanged="ApplyFilter" />
+                                <ComboBox Grid.Column="1" x:Name="FilterDropDown" Width="220" SelectedIndex="0" SelectionChanged="ApplyFilter">
+                                    <ComboBoxItem Content="All" IsSelected="True" />
+                                    <ComboBoxItem Content="Added on Left" />
+                                    <ComboBoxItem Content="Added on Right" />
+                                    <ComboBoxItem Content="Modified" />
+                                    <ComboBoxItem Content="Different Size" />
+                                    <ComboBoxItem Content="Unchanged" />
+                                </ComboBox>
+                            </Grid>
+
+                            <ListView x:Name="DiffListView" Grid.Row="1" SelectionMode="Extended" FontSize="13">
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Header="Relative Path" Width="300" DisplayMemberBinding="{Binding RelativePath}" />
+                                        <GridViewColumn Header="Status" Width="120" DisplayMemberBinding="{Binding Status}" />
+                                        <GridViewColumn Header="Left Size" Width="100" DisplayMemberBinding="{Binding LeftSize}" />
+                                        <GridViewColumn Header="Right Size" Width="100" DisplayMemberBinding="{Binding RightSize}" />
+                                        <GridViewColumn Header="Left Modified" Width="130" DisplayMemberBinding="{Binding LeftModified}" />
+                                        <GridViewColumn Header="Right Modified" Width="130" DisplayMemberBinding="{Binding RightModified}" />
+                                        <GridViewColumn Header="Notes" Width="220" DisplayMemberBinding="{Binding Notes}" />
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Grid>
                     </Grid>
+
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0,12,0,0">
+                        <Button Style="{StaticResource CardButton}" x:Name="CopyToLeftButton" Content="Copy Selected to Left" Click="CopyToLeft" />
+                        <Button Style="{StaticResource CardButton}" x:Name="CopyToRightButton" Content="Copy Selected to Right" Click="CopyToRight" />
+                        <Button Style="{StaticResource CardButton}" Background="#0EA5E9" x:Name="ExportButton" Content="Export CSV" Click="ExportCsv" />
+                    </StackPanel>
                 </Grid>
             </Border>
+            <Border Grid.Column="1" Style="{StaticResource PanelCard}" Background="#F1F5F9" Margin="18,0,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock Text="What this app does now" FontSize="18" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,0,0,14" />
+                        <TextBlock Text="Side-by-side folder setup" Style="{StaticResource FeatureText}" />
+                        <TextBlock Text="Added-only, missing-only, and modified diff reporting" Style="{StaticResource FeatureText}" />
+                        <TextBlock Text="Optional hash validation (SHA256) for reliable change detection" Style="{StaticResource FeatureText}" />
+                        <TextBlock Text="Filter by status and text search" Style="{StaticResource FeatureText}" />
+                        <TextBlock Text="One-click copy of selected files between folders" Style="{StaticResource FeatureText}" />
+                        <TextBlock Text="CSV report export for auditing" Style="{StaticResource FeatureText}" />
 
-            <Border Grid.Column="1" Background="#F1F5F9" BorderBrush="#E2E8F0" BorderThickness="1" Padding="22" Margin="18,0,0,0">
-                <StackPanel>
-                    <TextBlock Text="Initial app scope" FontSize="18" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,0,0,14" />
-            <TextBlock Text="Side-by-side folder setup" Style="{StaticResource FeatureText}" />
-            <TextBlock Text="Missing and changed file summary" Style="{StaticResource FeatureText}" />
-            <TextBlock Text="Comparison notes" Style="{StaticResource FeatureText}" />
-            <TextBlock Text="Local-only review" Style="{StaticResource FeatureText}" />
-                    <Separator Margin="0,10,0,18" />
-                    <TextBlock Text="Store readiness" FontSize="18" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,0,0,10" />
-                    <TextBlock Text="Store-Assets includes listing draft, privacy text, and submission checklist. Package identity still needs the reserved Partner Center name before final MSIX upload." TextWrapping="Wrap" Foreground="#475569" />
-                </StackPanel>
+                        <Separator Margin="0,10,0,14" />
+                        <TextBlock Text="Summary" FontSize="18" FontWeight="SemiBold" Foreground="#0F172A" Margin="0,0,0,8" />
+                        <TextBlock x:Name="SummaryText" Style="{StaticResource SubtleText}" Text="Run a compare to populate totals." TextWrapping="Wrap" />
+                        <TextBlock Text="Activity log" FontSize="16" FontWeight="SemiBold" Foreground="#0F172A" Margin="12,14,0,10" />
+                        <ListBox x:Name="ActivityList" Height="260" BorderBrush="#E2E8F0" BorderThickness="1" />
+                    </StackPanel>
+                </ScrollViewer>
             </Border>
         </Grid>
 
@@ -92,3 +184,6 @@
         </Border>
     </Grid>
 </Window>
+
+
+
