@@ -33,3 +33,29 @@ The app is now wired with `StartupUri` so it opens immediately and stays running
 ## Store notes
 
 For publishing, reserve the exact Microsoft Store product name in Partner Center and update package identity values to match that reservation.
+
+## Store deployment prep
+
+- Reserved app name: **Simple Folder Compare**
+- Store product ID: 9PLJSQS6NXWD`r
+- Package identity: m3Coding.SimpleFolderCompare`r
+- Publisher: CN=AFF85DD5-3D92-42A5-BA39-3AF6D41B1837`r
+- PFN: m3Coding.SimpleFolderCompare_8srffngrg4x08`r
+
+Package.appxmanifest has been added at the repo root with these identity values and is ready for your packaging project.
+## Store deploy command
+
+Use this single command to create the full Store handoff artifacts:
+
+```powershell
+pwsh -File .\Store-Assets\package-msix.ps1
+```
+
+Result files are created in:
+
+- dist/msix/SimpleFolderCompare_0.2.0.0_x64.msix
+- dist/msix/SimpleFolderCompare.msixupload
+
+Open the deployment handoff:
+
+- Store-Assets\StoreDeployment.html

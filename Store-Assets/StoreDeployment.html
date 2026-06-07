@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple Folder Compare — Store Deployment</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 24px;
+      max-width: 920px;
+      color: #1b1f23;
+      background: #f5f7fb;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      border: 1px solid #dbe3f0;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+    }
+    code { background: #f0f3f7; padding: 2px 5px; border-radius: 4px; }
+    h1 { margin-top: 0; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid #dde4ee; vertical-align: top; }
+    th { width: 260px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Simple Folder Compare — Store deployment handoff</h1>
+    <p><strong>Reserved name:</strong> Simple Folder Compare</p>
+  </div>
+
+  <div class="card">
+    <h2>Identity</h2>
+    <table>
+      <tr><th>Package Identity</th><td><code>m3Coding.SimpleFolderCompare</code></td></tr>
+      <tr><th>Publisher</th><td><code>CN=AFF85DD5-3D92-42A5-BA39-3AF6D41B1837</code></td></tr>
+      <tr><th>Publisher Display Name</th><td><code>m3 Coding</code></td></tr>
+      <tr><th>PFN</th><td><code>m3Coding.SimpleFolderCompare_8srffngrg4x08</code></td></tr>
+      <tr><th>Package SID</th><td><code>S-1-15-2-436062392-610004185-2893454694-660827364-1435197768-2820142454-2031917955</code></td></tr>
+      <tr><th>Store ID</th><td><code>9PLJSQS6NXWD</code></td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Package artifacts</h2>
+    <ul>
+      <li>Manifest: <code>Package.appxmanifest</code></li>
+      <li>Build + package script: <code>Store-Assets/package-msix.ps1</code></li>
+      <li>Store listing: <code>Store-Assets/StoreListing.md</code></li>
+      <li>Store checklist: <code>Store-Assets/StoreSubmissionChecklist.md</code></li>
+      <li>Privacy: <code>Store-Assets/PrivacyPolicy.txt</code></li>
+      <li>Store assets: <code>Store-Assets/</code></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Build and package commands</h2>
+    <pre><code>pwsh -File Store-Assets/package-msix.ps1</code></pre>
+    <p>If you need signing, pass your cert thumbprint:</p>
+    <pre><code>pwsh -File Store-Assets/package-msix.ps1 -SignCertificateThumbprint "YOUR_CERT_THUMBPRINT" -SignTimestamp "http://timestamp.digicert.com"</code></pre>
+    <p>Result:
+      <ul>
+        <li><code>dist/msix/SimpleFolderCompare_0.2.0.0_x64.msix</code></li>
+        <li><code>dist/msix/SimpleFolderCompare.msixupload</code></li>
+      </ul>
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>Next steps in Partner Center</h2>
+    <ol>
+      <li>Open product <strong>9PLJSQS6NXWD</strong>.</li>
+      <li>Upload <code>.msixupload</code>.</li>
+      <li>Attach Store listing assets and copy listing copy from Store-Assets docs.</li>
+      <li>Upload privacy policy and submit age rating/testing notes.</li>
+    </ol>
+  </div>
+</body>
+</html>
